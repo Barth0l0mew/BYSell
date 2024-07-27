@@ -1,56 +1,56 @@
 package com.example.BYSell.models;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+//Анотация соответсвия данной модели с сущности(объекта) в БД
+@Table(name = "products")
+//Название таблицы данных сущностей
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-//Анотация соответсвия данной модели в БД
-@Entity
-@Table (name="products")
-public class Product  {
-//Указываем id как ключ primary key
+public class Product {
     @Id
-    //Генерация инкримент ID
-    @GeneratedValue (strategy = GenerationType.AUTO)
-//    Указываем явно что данное поле относиться к колонке бд(можно и не указывать)
-    @Column (name = "id")
+    //id- Ид калонки
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    //GeneratedValue - указывает что данное свойство будет создоваться согласно данной стратегии
+    @Column(name = "id")
+    //column - указывает на име колонки данной сущности
     private Long id;
-    @Column (name = "titel")
+    @Column(name = "title")
     private String title;
-//    columnDefinition - меняем тип поля
-    @Column (name = "description", columnDefinition = "text")
+    @Column(name = "description", columnDefinition = "text")
+    //    columnDefinition - меняем тип поля
     private String description;
-    @Column (name = "price")
+    @Column(name = "price")
     private int price;
-    @Column (name = "city")
+    @Column(name = "city")
     private String city;
-    @Column (name = "autor")
+    @Column(name = "author")
     private String author;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy = "product")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,
+    mappedBy = "product")
+    //CascadeType.ALL — означает, что операция, например, записи должна распространяться и на дочерние таблицы.
     //mappedBy указывает на сзяку с Image.product
     private List<Image> images = new ArrayList<>();
     private Long previewImageId;
+    private LocalDateTime dateOfCreated;
 
-    private LocalDateTime dataOfCreater;
     @PrePersist
-    private void init (){
-        dataOfCreater = LocalDateTime.now();
+    private void init() {
+        dateOfCreated = LocalDateTime.now();
     }
-    public void addImageToProduct (Image image){
+
+
+    public void addImageToProduct(Image image) {
         image.setProduct(this);
-        System.out.println("Method addImageToProduct ="+image.getName());
-        System.out.println("images = "+ images);
         images.add(image);
-        System.out.println("images =" + images);
-        System.out.println("Image added to product = " +images);
     }
 }

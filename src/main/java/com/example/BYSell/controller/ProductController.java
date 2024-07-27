@@ -1,8 +1,7 @@
 package com.example.BYSell.controller;
 
 import com.example.BYSell.models.Product;
-import com.example.BYSell.services.ProductServices;
-import com.sun.tools.jconsole.JConsoleContext;
+import com.example.BYSell.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,35 +13,32 @@ import java.io.IOException;
 @Controller
 @RequiredArgsConstructor
 public class ProductController {
-    private final ProductServices productServices;
+    private final ProductService productService;
 
-
-
-    @GetMapping({"/",""})
-    public String products(@RequestParam(name="title", required = false) String title, Model model) {
-        model.addAttribute("products",productServices.list(title));
+    @GetMapping("/")
+    public String products(@RequestParam(name = "title", required = false) String title, Model model) {
+        model.addAttribute("products", productService.listProducts(title));
         return "products";
     }
-    @GetMapping("/product/{id}")
-    public String productInfo(Model model, @PathVariable Long id) {
 
-        Product product = productServices.getProductById(id);
-        System.out.println("========>"+product);
-        model.addAttribute("product",product);
+    @GetMapping("/product/{id}")
+    public String productInfo(@PathVariable Long id, Model model) {
+        Product product = productService.getProductById(id);
+        model.addAttribute("product", product);
         model.addAttribute("images", product.getImages());
-        return "productInfo";
+        return "product-info";
     }
+
     @PostMapping("/product/create")
-    public String createProduct(@RequestParam("file1")MultipartFile file1,
-                                @RequestParam("file2")MultipartFile file2,
-                                @RequestParam("file3")MultipartFile file3,
-                                Product product) throws IOException {
-        productServices.saveProduct(product,file1,file2,file3);
+    public String createProduct(@RequestParam("file1") MultipartFile file1, @RequestParam("file2") MultipartFile file2,
+                                @RequestParam("file3") MultipartFile file3, Product product) throws IOException {
+        productService.saveProduct(product, file1, file2, file3);
         return "redirect:/";
     }
+
     @PostMapping("/product/delete/{id}")
-    public String  deleteProduct (@PathVariable long id) {
-        productServices.deleteProduct(id);
+    public String deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
         return "redirect:/";
     }
 }
